@@ -1,8 +1,0 @@
-# ALIASES
-
-# rclone stuff
-# sync from Cryot-GDrive to local (pull down)
-alias rclone-sync-pull-crypt="rclone sync --config /media/veracrypt1/rclone/rclone.conf Crypt-GDrive: /home/chrx/Documents/rclone_crypt/ --create-empty-src-dirs --progress"
-
-# sync from local to Crypt-GDrive (push up)
-alias rclone-sync-push-crypt="rclone sync --config /media/veracrypt1/rclone/rclone.conf /home/chrx/Documents/rclone_crypt/ Crypt-GDrive: --create-empty-src-dirs --progress"
