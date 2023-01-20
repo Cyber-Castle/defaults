@@ -1,0 +1,105 @@
+##########
+# Created by NISB 05 JUL
+#########
+
+
+### Apearance
+# Terminal Colors
+set -g default-terminal "screen-256color"
+
+
+### Keybindings
+# Set prefix to Ctrl-Space instead of Ctrl-b
+unbind C-b
+set -g prefix C-Space
+bind Space send-prefix
+
+# Split windows using | and -
+bind \\ split-window -h -c "#{pane_current_path}"
+bind - split-window -v -c "#{pane_current_path}"
+
+# Automatically prompt for name when you create a pane
+bind-key c command-prompt -p "window name:" "new-window; rename-window '%%'"; send-keys "~/.tmux/plugins/tmux-logging/scripts/start_logging.sh" Enter
+
+
+### Mouse
+set -g mouse on
+bind -n WheelUpPane if-shell -F -t = "#{mouse_any_flag}" "send-keys -M" "if -Ft= '#{pane_in_mode}' 'send-keys -M' 'select-pane -t=; copy-mode -e; send-keys -M'"
+bind -n WheelDownPane select-pane -t= \; send-keys -M
+bind -n C-WheelUpPane select-pane -t= \; copy-mode -e \; send-keys -M
+bind -T copy-mode-vi    C-WheelUpPane   send-keys -X halfpage-up
+bind -T copy-mode-vi    C-WheelDownPane send-keys -X halfpage-down
+bind -T copy-mode-emacs C-WheelUpPane   send-keys -X halfpage-up
+bind -T copy-mode-emacs C-WheelDownPane send-keys -X halfpage-down
+
+### Copy
+# To copy, left click and drag to highlight text in yellow, 
+# once you release left click yellow text will disappear and will automatically be available in clibboard
+# # Use vim keybindings in copy mode
+setw -g mode-keys vi
+# Update default binding of `Enter` to also use copy-pipe
+unbind -T copy-mode-vi Enter
+bind-key -T copy-mode-vi Enter send-keys -X copy-pipe-no-clear "xclip -selection c"
+bind-key -T copy-mode-vi MouseDragEnd1Pane send-keys -X copy-pipe-no-clear "xclip -in -selection clipboard"
+
+# Middle click to paste from the clipboard
+unbind-key MouseDown2Pane
+bind-key -n MouseDown2Pane run "tmux set-buffer \"$(xclip -o -selection clipboard)\"; tmux paste-buffer"
+
+# Double LMB Select & Copy (Word)
+bind-key -T copy-mode-vi DoubleClick1Pane \
+    select-pane \; \
+    send-keys -X select-word-no-clear \; \
+    send-keys -X copy-pipe-no-clear "xclip -in -selection clipboard"
+bind-key -n DoubleClick1Pane \
+    select-pane \; \
+    copy-mode -M \; \
+    send-keys -X select-word \; \
+    send-keys -X copy-pipe-no-clear "xclip -in -selection clipboard"
+
+# Triple LMB Select & Copy (Line)
+bind-key -T copy-mode-vi TripleClick1Pane \
+    select-pane \; \
+    send-keys -X select-line \; \
+    send-keys -X copy-pipe-no-clear "xclip -in -selection clipboard"
+bind-key -n TripleClick1Pane \
+    select-pane \; \
+    copy-mode -M \; \
+    send-keys -X select-line \; \
+    send-keys -X copy-pipe-no-clear "xclip -in -selection clipboard"
+
+### Path
+# Set new panes to open in current directory
+bind c new-window -c "#{pane_current_path}"
+bind '"' split-window -c "#{pane_current_path}"
+bind % split-window -h -c "#{pane_current_path}"
+
+### TMUX PLUGINS ###
+# List of plugins
+set -g @plugin 'tmux-plugins/tpm'
+set -g @plugin 'tmux-plugins/tmux-sensible'
+set -g @plugin 'tmux-plugins/tmux-logging'
+set -g @plugin 'tmux-plugins/tmux-copycat'
+set -g @plugin 'tmux-plugins/tmux-prefix-highlight'
+set -g @plugin 'tmux-plugins/tmux-sidebar'
+
+
+## TMUX-LOGGING STUFF ##
+# there is more to it than this.
+# https://unix.stackexchange.com/questions/623054/how-to-automatically-log-all-my-tmux-sessions-to-a-file-in-directory-accordin
+set -g @logging-path "$HOME/.tmux-log"
+set -g @screen-capture-path "$HOME/.tmux-log"
+set -g @save-complete-history-path "$HOME/.tmux-log"
+
+## TMUX Status Bar Stuff ##
+set -g status-right '#{prefix_highlight} | %a %Y-%m-%d %H:%M'
+
+
+# Other examples:
+# set -g @plugin 'github_username/plugin_name'
+# set -g @plugin 'github_username/plugin_name#branch'
+# set -g @plugin 'git@github.com:user/plugin'
+# set -g @plugin 'git@bitbucket.com:user/plugin'
+
+# Initialize TMUX plugin manager (keep this line at the very bottom of tmux.conf)
+run '~/.tmux/plugins/tpm/tpm'
